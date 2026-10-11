@@ -1,0 +1,9 @@
+# Windows app (Python 3.12, 64-bit)
+PySide6
+numpy
+mss
+rapidocr
+onnxruntime
+huggingface_hub
+# build only
+pyinstaller

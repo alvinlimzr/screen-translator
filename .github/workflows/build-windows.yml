@@ -1,0 +1,46 @@
+# Builds the Windows app on GitHub's Windows machines. Push this folder to a GitHub
+# repo, then Actions -> "Build Windows app" -> Run workflow (or push a tag v*).
+# Download the result from the run's "Artifacts" (ScreenTranslator-windows).
+name: Build Windows app
+
+on:
+  workflow_dispatch:
+  push:
+    tags: ["v*"]
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Build
+        shell: pwsh
+        run: |
+          Set-ExecutionPolicy -Scope Process Bypass
+          .\build_windows.ps1
+
+      - name: Tests (engine, layout, Windows UI offscreen)
+        shell: pwsh
+        env:
+          QT_QPA_PLATFORM: offscreen
+        run: |
+          .\.venv\Scripts\python -c "import win.app, win.ocr, engine; print('imports ok')"
+          .\.venv\Scripts\python test_engine.py
+          .\.venv\Scripts\python test_layout.py
+          .\.venv\Scripts\python test_win_ui.py
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ScreenTranslator-windows
+          path: dist/ScreenTranslator/
+
+      - name: Attach to release (tag builds)
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/ScreenTranslator-windows.zip

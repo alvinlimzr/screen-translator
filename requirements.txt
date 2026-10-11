@@ -1,0 +1,11 @@
+# macOS (Apple Silicon)
+pyobjc-framework-Cocoa
+pyobjc-framework-Quartz
+pyobjc-framework-Vision
+pyobjc-framework-ScreenCaptureKit
+mlx-lm
+numpy
+huggingface_hub
+# optional: NLLB model ("fastest" option)
+ctranslate2
+sentencepiece
